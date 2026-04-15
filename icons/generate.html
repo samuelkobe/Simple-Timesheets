@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!--
+  Open this file in a browser to generate the extension icons.
+  It will auto-download icon16.png, icon48.png, and icon128.png.
+  Move the downloaded files into this icons/ folder.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Generate Icons</title>
+  <style>
+    body { font-family: sans-serif; padding: 24px; background: #f5f5f5; }
+    canvas { border: 1px solid #ddd; margin: 8px; }
+    button { margin-top: 16px; padding: 10px 24px; font-size: 1rem; cursor: pointer;
+             background: #0D9488; color: white; border: none; border-radius: 6px; }
+    button:hover { background: #0F766E; }
+    .previews { display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin: 16px 0; }
+    .preview-wrap { text-align: center; font-size: .8rem; color: #555; }
+  </style>
+</head>
+<body>
+  <h2>Simple Timesheets — Icon Generator</h2>
+  <p>Click the button below to download all three icon sizes.</p>
+
+  <div class="previews">
+    <div class="preview-wrap"><canvas id="c16"  width="16"  height="16"></canvas><br/>16px</div>
+    <div class="preview-wrap"><canvas id="c48"  width="48"  height="48"></canvas><br/>48px</div>
+    <div class="preview-wrap"><canvas id="c128" width="128" height="128"></canvas><br/>128px</div>
+  </div>
+
+  <button id="dlBtn">Download Icons</button>
+
+  <script>
+    function drawIcon(canvas) {
+      const s = canvas.width;
+      const ctx = canvas.getContext('2d');
+      const r = s * 0.12; // corner radius
+
+      // Background rounded rect
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(s - r, 0);
+      ctx.quadraticCurveTo(s, 0, s, r);
+      ctx.lineTo(s, s - r);
+      ctx.quadraticCurveTo(s, s, s - r, s);
+      ctx.lineTo(r, s);
+      ctx.quadraticCurveTo(0, s, 0, s - r);
+      ctx.lineTo(0, r);
+      ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+      ctx.fillStyle = '#0D9488';
+      ctx.fill();
+
+      // Clock circle
+      const cx = s / 2;
+      const cy = s / 2;
+      const cr = s * 0.34;
+      const lw = Math.max(1, s * 0.07);
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = lw;
+      ctx.stroke();
+
+      // Hour hand (12 o'clock position pointing down-right to ~2 o'clock)
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx, cy - cr * 0.58);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = lw;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Minute hand
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + cr * 0.52, cy + cr * 0.22);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = lw;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(cx, cy, lw * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+    }
+
+    const sizes = [16, 48, 128];
+    sizes.forEach((s) => drawIcon(document.getElementById(`c${s}`)));
+
+    document.getElementById('dlBtn').addEventListener('click', () => {
+      sizes.forEach((s) => {
+        const canvas = document.getElementById(`c${s}`);
+        const link = document.createElement('a');
+        link.download = `icon${s}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>
