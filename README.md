@@ -1,3 +1,5 @@
+=======
+
 # Simple Timesheets
 
 A lightweight Chrome extension for tracking time on client projects — inspired by Harvest, but free, open source, and yours.
@@ -31,12 +33,15 @@ A lightweight Chrome extension for tracking time on client projects — inspired
 > Only needed if you want automatic cross-device sync.
 
 ### Step 1 — Chrome Web Store developer account (for publishing)
+
 A permanent extension ID is required for the Google Cloud setup. You get this by:
+
 - Paying the one-time $5 Chrome Web Store developer fee
 - Uploading the extension as a draft (don't publish yet)
 - Copying the permanent extension ID from the draft listing
 
 ### Step 2 — Google Cloud Console
+
 1. Go to [console.cloud.google.com](https://console.cloud.google.com) → create a new project
 2. **APIs & Services → Enable APIs** → enable **Google Drive API** and **People API**
 3. **APIs & Services → OAuth consent screen**
@@ -50,6 +55,7 @@ A permanent extension ID is required for the Google Cloud setup. You get this by
 5. Copy the **Client ID**
 
 ### Step 3 — Add the client ID
+
 1. Open `manifest.json` (copied from `manifest.example.json`)
 2. Replace `YOUR_CLIENT_ID.apps.googleusercontent.com` with the real client ID
 3. Reload the extension in `chrome://extensions`
@@ -63,6 +69,7 @@ A permanent extension ID is required for the Google Cloud setup. You get this by
 If `manifest.json` was already committed before you added your client ID, it's safe — it only had the placeholder. Once you add a real client ID, it's gitignored automatically.
 
 If git is already tracking `manifest.json`, run this once to stop tracking it:
+
 ```bash
 git rm --cached manifest.json
 ```
@@ -74,6 +81,7 @@ git rm --cached manifest.json
 `privacy-policy.html` is a standalone page that can be hosted on GitHub Pages.
 
 **To publish it:**
+
 1. Make the repo public on GitHub (recommended for an open-source extension)
 2. Go to **Settings → Pages → Source → main branch → / (root)**
 3. Your privacy policy will be at: `https://samuelkobe.github.io/Simple-Timesheets/privacy-policy.html`
@@ -92,6 +100,7 @@ git rm --cached manifest.json
 6. Submit for review
 
 **For OAuth verification (to remove the "unverified app" warning for public users):**
+
 - Start in testing mode (up to 100 test users, no review needed)
 - When ready for public release, submit for Google's OAuth verification review
 - Requires the privacy policy URL and a description of how Drive is used
@@ -100,22 +109,22 @@ git rm --cached manifest.json
 
 ## Rounding logic
 
-| Raw time | Rounded to |
-|----------|-----------|
-| 1–15 min | 15 min |
-| 16–30 min | 30 min |
-| 31–45 min | 45 min |
+| Raw time  | Rounded to  |
+| --------- | ----------- |
+| 1–15 min  | 15 min      |
+| 16–30 min | 30 min      |
+| 31–45 min | 45 min      |
 | 46–60 min | 60 min (1h) |
 
 ---
 
 ## Data & storage
 
-| Store | What | Size |
-|---|---|---|
-| `chrome.storage.local` | All projects & entries | Effectively unlimited |
-| Google Drive `appDataFolder` | Optional sync backup | Your Drive quota |
-| Export JSON | Manual backup | A dated `.json` file |
+| Store                        | What                   | Size                  |
+| ---------------------------- | ---------------------- | --------------------- |
+| `chrome.storage.local`       | All projects & entries | Effectively unlimited |
+| Google Drive `appDataFolder` | Optional sync backup   | Your Drive quota      |
+| Export JSON                  | Manual backup          | A dated `.json` file  |
 
 We have no servers. No analytics. No tracking. Your data never leaves your device unless you explicitly enable Drive sync — and even then, it goes to your own Google account, not ours.
 
@@ -143,3 +152,8 @@ simple-timesheets/
     ├── icon48.png
     └── icon128.png
 ```
+
+# <<<<<<< HEAD
+
+> > > > > > > 9473509 (Initial extension build with onboarding, privacy policy, and manifest protection)
+> > > > > > > main
