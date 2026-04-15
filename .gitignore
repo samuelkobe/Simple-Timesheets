@@ -1,4 +1,4 @@
-# Protect the real manifest — it contains your Google OAuth client ID.
+# Protect the real manifest.json — it contains your Google OAuth client ID.
 # Commit manifest.example.json instead (it has the placeholder).
 # When setting up locally: copy manifest.example.json → manifest.json and add your client ID.
 manifest.json
