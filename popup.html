@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Timesheets</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ─── Header ──────────────────────────────────────────────────────────────── -->
+<header id="header">
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="11" r="10" stroke="currentColor" stroke-width="2"/>
+      <path d="M11 6v5.5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    Simple Timesheets
+  </div>
+  <div class="user-area">
+    <span id="sync-indicator" class="hidden">
+      <span class="spinner"></span>
+      Syncing…
+    </span>
+    <div id="drive-status-dot" class="drive-dot hidden" title="Drive sync active"></div>
+    <button id="settings-open-btn" class="btn-icon" title="Settings">
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+        <path d="M8.5 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M13.7 6.7l.8-1.4-1.4-1.4-1.4.8a4.5 4.5 0 0 0-1.5-.6L9.8 2.5H7.2l-.4 1.6a4.5 4.5 0 0 0-1.5.6l-1.4-.8-1.4 1.4.8 1.4a4.5 4.5 0 0 0-.6 1.5L2 9.6l1.6.4c.14.54.35 1.05.6 1.5l-.8 1.4 1.4 1.4 1.4-.8c.45.25.96.46 1.5.6l.4 1.6h2.6l.4-1.6a4.5 4.5 0 0 0 1.5-.6l1.4.8 1.4-1.4-.8-1.4c.25-.45.46-.96.6-1.5l1.6-.4-.4-1.9a4.5 4.5 0 0 0-.6-1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ─── Navigation ───────────────────────────────────────────────────────────── -->
+<nav id="nav">
+  <button class="nav-btn active" data-tab="timer">Timer</button>
+  <button class="nav-btn" data-tab="projects">Projects</button>
+  <button class="nav-btn" data-tab="reports">Reports</button>
+</nav>
+
+<!-- ─── Wrapper (position: relative for overlay panels) ─────────────────────── -->
+<div id="tabs-wrapper" style="position:relative; flex:1; display:flex; flex-direction:column; overflow:hidden;">
+
+  <!-- ══════ TIMER TAB ═══════════════════════════════════════════════════════ -->
+  <div id="tab-timer" class="tab active">
+
+    <!-- Timer controls -->
+    <div id="timer-section">
+      <div class="timer-controls">
+        <select id="timer-project">
+          <option value="">— Select project —</option>
+        </select>
+      </div>
+      <input id="timer-memo" type="text" placeholder="What are you working on? (optional)" style="margin-top:6px;" />
+
+      <div class="timer-display-wrap">
+        <div id="timer-display">00:00</div>
+        <button id="timer-toggle">Start</button>
+      </div>
+
+      <div id="rounding-badge-wrap" class="hidden">
+        <span class="rounding-badge">
+          <svg width="11" height="11" viewBox="0 0 11 11"><circle cx="5.5" cy="5.5" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M5.5 3v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Rounding to ¼ hr
+        </span>
+      </div>
+    </div>
+
+    <!-- Recent entries list -->
+    <div id="entries-section">
+      <div class="section-header">
+        <span class="section-title">Recent Entries</span>
+        <button id="add-entry-btn" class="btn btn-outline btn-sm">+ Manual Entry</button>
+      </div>
+      <div id="entries-list">
+        <div class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="6" width="24" height="20" rx="3" stroke="#CBD5E1" stroke-width="2"/>
+            <path d="M10 12h12M10 16h8M10 20h10" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>No entries yet. Start the timer<br/>or add a manual entry.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Manual Entry Panel (overlay) ─────────────────────────────────────── -->
+    <div id="manual-form-panel" class="hidden">
+      <div class="panel-header">
+        <button id="manual-form-close" class="btn-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 6 6 10M6 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <h2 id="manual-form-title">Add Time Entry</h2>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label for="mf-project">Project</label>
+          <select id="mf-project">
+            <option value="">— Select project —</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="mf-date">Date</label>
+            <input type="date" id="mf-date" />
+          </div>
+          <div class="field">
+            <label for="mf-duration">Duration (h:mm)</label>
+            <input type="text" id="mf-duration" placeholder="e.g. 1:30 or 45" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="mf-memo">Memo (optional)</label>
+          <textarea id="mf-memo" placeholder="What did you work on?"></textarea>
+        </div>
+        <div id="mf-rounding-row" class="toggle-row hidden">
+          <div>
+            <div class="toggle-label">Round to ¼ hour</div>
+            <div class="toggle-sublabel">Inherited from project setting</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="mf-round" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="mf-rounded-preview" class="hidden" style="margin-top:8px; font-size:.82rem; color:var(--primary);">
+          ↳ Will be saved as <strong id="mf-rounded-value"></strong>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button id="manual-form-cancel" class="btn btn-outline btn-full">Cancel</button>
+        <button id="manual-form-save" class="btn btn-primary btn-full">Save Entry</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-timer -->
+
+  <!-- ══════ PROJECTS TAB ════════════════════════════════════════════════════ -->
+  <div id="tab-projects" class="tab">
+
+    <div id="projects-section">
+      <div class="section-header">
+        <span class="section-title">Projects</span>
+        <button id="add-project-btn" class="btn btn-outline btn-sm">+ New Project</button>
+      </div>
+
+      <div id="projects-list">
+        <div class="empty-state">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="8" width="24" height="16" rx="3" stroke="#CBD5E1" stroke-width="2"/>
+            <path d="M4 13h24" stroke="#CBD5E1" stroke-width="1.5"/>
+            <circle cx="10" cy="10.5" r="1" fill="#CBD5E1"/>
+            <circle cx="14" cy="10.5" r="1" fill="#CBD5E1"/>
+          </svg>
+          <p>No projects yet.<br/>Create one to get started.</p>
+        </div>
+      </div>
+
+      <div style="padding: 10px 16px; border-top: 1px solid var(--border);">
+        <label class="toggle-row" style="cursor:pointer;">
+          <span class="toggle-label" style="font-size:.8rem; color: var(--text-muted);">Show archived</span>
+          <label class="toggle">
+            <input type="checkbox" id="show-archived" />
+            <span class="toggle-slider"></span>
+          </label>
+        </label>
+      </div>
+    </div>
+
+    <!-- ── Project Form Panel (overlay) ──────────────────────────────────────── -->
+    <div id="project-form-panel" class="hidden">
+      <div class="panel-header">
+        <button id="project-form-close" class="btn-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 6 6 10M6 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <h2 id="project-form-title">New Project</h2>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label for="pf-name">Project Name</label>
+          <input type="text" id="pf-name" placeholder="e.g. Client Website Redesign" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="pf-rate">Hourly Rate</label>
+            <input type="number" id="pf-rate" placeholder="0.00" min="0" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="pf-currency">Currency</label>
+            <select id="pf-currency">
+              <option value="USD">USD $</option>
+              <option value="EUR">EUR €</option>
+              <option value="GBP">GBP £</option>
+              <option value="CAD">CAD $</option>
+              <option value="AUD">AUD $</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="pf-color">Color</label>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <input type="color" id="pf-color" value="#0D9488" />
+            <span style="font-size:.82rem; color:var(--text-muted);">Used to identify the project</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Round to ¼ hour</div>
+            <div class="toggle-sublabel">Auto-round time entries up to the nearest 15 min</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="pf-round" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="pf-archive-row" class="toggle-row hidden">
+          <div>
+            <div class="toggle-label">Archived</div>
+            <div class="toggle-sublabel">Hidden from timer, entries still visible in reports</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="pf-archived" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button id="project-form-cancel" class="btn btn-outline btn-full">Cancel</button>
+        <button id="project-form-save" class="btn btn-primary btn-full">Save Project</button>
+      </div>
+    </div>
+
+  </div><!-- /tab-projects -->
+
+  <!-- ══════ REPORTS TAB ════════════════════════════════════════════════════ -->
+  <div id="tab-reports" class="tab">
+
+    <div id="reports-section">
+      <div class="report-filters">
+        <select id="report-period">
+          <option value="week">This Week</option>
+          <option value="month" selected>This Month</option>
+          <option value="year">This Year</option>
+          <option value="custom">Custom Range</option>
+        </select>
+        <select id="report-project">
+          <option value="">All Projects</option>
+        </select>
+      </div>
+
+      <div id="report-custom-dates" class="hidden">
+        <div class="field" style="margin-bottom:0;">
+          <label for="report-start">From</label>
+          <input type="date" id="report-start" />
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label for="report-end">To</label>
+          <input type="date" id="report-end" />
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button id="report-apply" class="btn btn-primary btn-sm">Apply</button>
+        </div>
+      </div>
+
+      <div id="report-content">
+        <div class="empty-state" style="padding:40px 16px;">
+          <p>No entries in this period.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-reports -->
+
+</div><!-- /tabs-wrapper -->
+
+<!-- ─── Onboarding panel (first run) ─────────────────────────────────────────── -->
+<div id="onboarding-panel" class="full-panel hidden">
+  <div class="onboarding-body">
+
+    <div class="onboarding-logo">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+        <rect width="52" height="52" rx="14" fill="#0D9488"/>
+        <circle cx="26" cy="26" r="14" stroke="white" stroke-width="2.5"/>
+        <path d="M26 18v8.5l5 3" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <h1 class="onboarding-title">Simple Timesheets</h1>
+    <p class="onboarding-tagline">Track your time. Know your worth.</p>
+
+    <div class="onboarding-features">
+      <div class="onboarding-feature">
+        <div class="onboarding-feature-icon">⏱</div>
+        <div>
+          <div class="onboarding-feature-title">Timer &amp; Manual Entry</div>
+          <div class="onboarding-feature-desc">Start a timer or log time manually. Add a memo to every entry.</div>
+        </div>
+      </div>
+      <div class="onboarding-feature">
+        <div class="onboarding-feature-icon">🔢</div>
+        <div>
+          <div class="onboarding-feature-title">¼ Hour Rounding</div>
+          <div class="onboarding-feature-desc">Optionally round entries up to the nearest 15 minutes, per project.</div>
+        </div>
+      </div>
+      <div class="onboarding-feature">
+        <div class="onboarding-feature-icon">📊</div>
+        <div>
+          <div class="onboarding-feature-title">Reports &amp; Earnings</div>
+          <div class="onboarding-feature-desc">Weekly, monthly, annual, or custom reports with hours and cost.</div>
+        </div>
+      </div>
+      <div class="onboarding-feature">
+        <div class="onboarding-feature-icon">☁️</div>
+        <div>
+          <div class="onboarding-feature-title">Your Data, Your Drive</div>
+          <div class="onboarding-feature-desc">Data stays on your device. Optional sync to your own Google Drive — we never see it.</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="onboarding-start-btn" class="btn btn-primary btn-full" style="margin-top: 4px;">
+      Create My First Project →
+    </button>
+    <button id="onboarding-skip-btn" class="btn btn-ghost btn-full" style="margin-top: 6px; font-size: .8rem;">
+      Skip for now
+    </button>
+
+  </div>
+</div>
+
+<!-- ─── Settings panel (full-screen overlay) ─────────────────────────────────── -->
+<div id="settings-panel" class="full-panel hidden">
+  <div class="panel-header">
+    <button id="settings-close-btn" class="btn-icon">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 6 6 10M6 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <h2>Settings</h2>
+  </div>
+
+  <div class="panel-body scroll">
+
+    <!-- ── Google Drive Sync ─────────────────────────────────────────────── -->
+    <div class="settings-section">
+      <div class="settings-section-title">Google Drive Sync</div>
+
+      <!-- State A: client ID not configured -->
+      <div id="drive-state-unconfigured">
+        <p class="settings-desc">
+          Drive sync stores your data in a private folder on your Google Drive —
+          invisible in the Drive UI, accessible from any browser you're signed into.
+        </p>
+        <div class="drive-setup-steps">
+          <div class="setup-step">
+            <span class="step-num">1</span>
+            <span>Create a project in <strong>Google Cloud Console</strong> and enable the <strong>Drive API</strong> + <strong>People API</strong></span>
+          </div>
+          <div class="setup-step">
+            <span class="step-num">2</span>
+            <span>Create an <strong>OAuth 2.0 Client ID</strong> (type: Chrome Extension) and add this extension's ID</span>
+          </div>
+          <div class="setup-step">
+            <span class="step-num">3</span>
+            <span>Paste the Client ID into <code>manifest.json</code> and reload the extension</span>
+          </div>
+        </div>
+        <p class="settings-hint">Your extension ID: <code id="extension-id"></code></p>
+      </div>
+
+      <!-- State B: client ID configured, not signed in -->
+      <div id="drive-state-signed-out" class="hidden">
+        <p class="settings-desc">Sign in with your Google account to enable Drive sync.</p>
+        <button id="settings-sign-in-btn" class="btn btn-primary btn-full" style="margin-top:10px;">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" style="flex-shrink:0"><path d="M13.5 7.5c0-.47-.04-.92-.11-1.36H7.5v2.57h3.37a2.88 2.88 0 0 1-1.25 1.89v1.57h2.02c1.18-1.09 1.86-2.69 1.86-4.67Z" fill="#4285F4"/><path d="M7.5 14c1.69 0 3.11-.56 4.14-1.52l-2.02-1.57c-.56.38-1.28.6-2.12.6-1.63 0-3.01-1.1-3.5-2.58H1.9v1.62A6.5 6.5 0 0 0 7.5 14Z" fill="#34A853"/><path d="M4 8.93a3.9 3.9 0 0 1 0-2.47V4.84H1.9a6.5 6.5 0 0 0 0 5.83L4 8.93Z" fill="#FBBC05"/><path d="M7.5 3.48c.92 0 1.74.32 2.39.94l1.79-1.79A6.5 6.5 0 0 0 1.9 4.84L4 6.46C4.49 4.98 5.87 3.48 7.5 3.48Z" fill="#EA4335"/></svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <!-- State C: signed in -->
+      <div id="drive-state-signed-in" class="hidden">
+        <div class="drive-user-row">
+          <img id="settings-avatar" class="settings-avatar" alt="avatar" />
+          <div class="drive-user-info">
+            <div id="settings-user-name" class="settings-user-name"></div>
+            <div id="settings-user-email" class="settings-user-email"></div>
+          </div>
+        </div>
+        <div id="drive-last-synced" class="settings-hint" style="margin-top:6px;"></div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="sync-now-btn" class="btn btn-outline" style="flex:1;">Sync Now</button>
+          <button id="settings-sign-out-btn" class="btn btn-ghost">Sign out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Data management ────────────────────────────────────────────────── -->
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <p class="settings-desc">Export all your data as a JSON file. Import a previously exported file to restore or merge data.</p>
+      <div style="display:flex; gap:8px; margin-top:10px;">
+        <button id="export-btn" class="btn btn-outline" style="flex:1;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2v7M4.5 6.5 7 9l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Export JSON
+        </button>
+        <button id="import-btn" class="btn btn-outline" style="flex:1;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 9V2M4.5 4.5 7 2l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 10v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Import JSON
+        </button>
+      </div>
+      <input type="file" id="import-file-input" accept=".json" class="hidden" />
+      <div id="import-preview" class="import-preview hidden">
+        <div class="import-preview-stats">
+          Found <strong id="import-projects-count"></strong> projects and <strong id="import-entries-count"></strong> entries.
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="import-confirm-btn" class="btn btn-primary" style="flex:1;">Import & Merge</button>
+          <button id="import-cancel-btn" class="btn btn-ghost">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Danger zone ────────────────────────────────────────────────────── -->
+    <div class="settings-section settings-section-danger">
+      <div class="settings-section-title danger">Danger Zone</div>
+      <p class="settings-desc">Permanently delete all projects and time entries. This cannot be undone.</p>
+      <button id="clear-data-btn" class="btn btn-danger btn-full" style="margin-top:10px;">Clear All Data</button>
+    </div>
+
+  </div><!-- /panel-body -->
+</div>
+
+<!-- ─── Toast notification ───────────────────────────────────────────────────── -->
+<div id="toast"></div>
+
+<script src="popup.js" type="module"></script>
+</body>
+</html>

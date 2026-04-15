@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Simple Timesheets</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      line-height: 1.7;
+      padding: 48px 24px;
+    }
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 48px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+      text-decoration: none;
+      color: #0D9488;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #0f172a;
+    }
+    .last-updated {
+      font-size: .875rem;
+      color: #64748b;
+      margin-bottom: 36px;
+    }
+    h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
+    p, li { font-size: .95rem; color: #334155; }
+    ul { margin: 8px 0 8px 20px; }
+    li { margin-bottom: 6px; }
+    .highlight {
+      background: #CCFBF1;
+      border-left: 3px solid #0D9488;
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+    .highlight p { color: #0f172a; font-weight: 500; }
+    a { color: #0D9488; }
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      font-size: .82rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <a class="logo" href="#">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect width="24" height="24" rx="6" fill="#0D9488"/>
+      <circle cx="12" cy="12" r="6.5" stroke="white" stroke-width="1.5"/>
+      <path d="M12 8.5v4l2 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    Simple Timesheets
+  </a>
+
+  <h1>Privacy Policy</h1>
+  <p class="last-updated">Last updated: April 2026</p>
+
+  <div class="highlight">
+    <p>Simple Timesheets does not collect, transmit, or store any of your data on any server we own or operate. Ever.</p>
+  </div>
+
+  <h2>What data the extension handles</h2>
+  <p>Simple Timesheets handles the following data locally on your device:</p>
+  <ul>
+    <li>Project names, hourly rates, and settings you configure</li>
+    <li>Time entries including date, duration, and optional memos you write</li>
+    <li>Your Google account name, email address, and profile photo (only if you choose to sign in)</li>
+  </ul>
+
+  <h2>Where your data lives</h2>
+  <p>All data is stored in two places, both under your exclusive control:</p>
+  <ul>
+    <li><strong>Your browser (chrome.storage.local)</strong> — the primary data store. It lives on your device, inside Chrome, and is not accessible to us or any third party.</li>
+    <li><strong>Your Google Drive (optional)</strong> — if you choose to enable Drive sync, your data is saved to a private, hidden folder in your own Google Drive account. This folder is only accessible to Simple Timesheets when you are actively signed in, and is invisible in the Google Drive UI. We do not have access to it. Google's own privacy policy governs your Drive storage.</li>
+  </ul>
+
+  <h2>What we do not do</h2>
+  <ul>
+    <li>We do not run any servers that receive your data</li>
+    <li>We do not use analytics, tracking pixels, or telemetry of any kind</li>
+    <li>We do not sell, share, or monetize your data</li>
+    <li>We do not have access to your Google Drive or its contents</li>
+    <li>We do not store your Google account credentials — authentication is handled entirely by Google's OAuth service</li>
+  </ul>
+
+  <h2>Google Sign-In (optional)</h2>
+  <p>
+    Signing in with Google is entirely optional. It is only used to enable Drive sync.
+    When you sign in, Google provides the extension with an access token to write to
+    your Drive's Application Data folder. This token is never transmitted to us.
+    You can revoke access at any time from your
+    <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions page</a>.
+  </p>
+
+  <h2>Data export and deletion</h2>
+  <p>
+    You own your data completely. You can export a full copy at any time using the
+    Export JSON feature in Settings. To delete your data, use the "Clear All Data"
+    option in Settings. If you enabled Drive sync, you can also delete the app data
+    folder from your Google Account at any time.
+  </p>
+
+  <h2>Children's privacy</h2>
+  <p>
+    Simple Timesheets is not directed at children under 13. We do not knowingly
+    collect any information from children.
+  </p>
+
+  <h2>Changes to this policy</h2>
+  <p>
+    If we make material changes to this policy, we will update the "Last updated"
+    date above. Because the extension stores no data on our side, changes to this
+    policy will only ever reflect changes in how the extension itself behaves — not
+    changes to a backend.
+  </p>
+
+  <h2>Open source</h2>
+  <p>
+    Simple Timesheets is open source. You can read every line of code to verify
+    these claims yourself.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions about this policy? Open an issue on the
+    <a href="https://github.com/samuelkobe/Simple-Timesheets" target="_blank" rel="noopener">GitHub repository</a>.
+  </p>
+
+  <div class="footer">
+    Simple Timesheets · Privacy Policy · No data collected, no exceptions.
+  </div>
+
+</div>
+</body>
+</html>
