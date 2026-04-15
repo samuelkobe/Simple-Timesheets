@@ -151,6 +151,7 @@ function switchTab(tab) {
   });
   if (tab === 'timer') renderEntries();
   if (tab === 'projects') renderProjects();
+  if (tab === 'timesheets') renderTimesheets();
   if (tab === 'reports') renderReports();
 }
 
@@ -286,7 +287,7 @@ function renderTimerControls() {
 function populateProjectSelects() {
   const active = state.projects.filter((p) => !p.archived);
 
-  ['timer-project', 'mf-project', 'report-project'].forEach((id) => {
+  ['timer-project', 'mf-project', 'report-project', 'ts-project-filter'].forEach((id) => {
     const sel = document.getElementById(id);
     if (!sel) return;
 
@@ -464,6 +465,7 @@ async function saveManualEntry() {
   triggerSync();
   closeManualForm();
   renderEntries();
+  renderTimesheets();
   showToast(`Saved ${formatMinutes(finalMinutes)}`);
 }
 
@@ -575,6 +577,86 @@ async function saveProjectForm() {
   showToast(`Project "${name}" saved`);
 }
 
+// ─── Timesheets ───────────────────────────────────────────────────────────────
+
+function renderTimesheets() {
+  const list = document.getElementById('timesheets-list');
+  if (!list) return;
+
+  const filterProjectId = document.getElementById('ts-project-filter')?.value || '';
+
+  let entries = filterProjectId
+    ? state.entries.filter((e) => e.projectId === filterProjectId)
+    : [...state.entries];
+
+  if (entries.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state" style="padding:32px 16px;">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <rect x="4" y="6" width="24" height="20" rx="3" stroke="#CBD5E1" stroke-width="2"/>
+          <path d="M10 12h12M10 16h8M10 20h10" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p>No entries yet.</p>
+      </div>`;
+    return;
+  }
+
+  // Group by date, newest first
+  entries.sort((a, b) => {
+    if (b.date !== a.date) return b.date.localeCompare(a.date);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const byDate = {};
+  entries.forEach((e) => {
+    if (!byDate[e.date]) byDate[e.date] = [];
+    byDate[e.date].push(e);
+  });
+
+  list.innerHTML = Object.entries(byDate)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([date, dayEntries]) => {
+      const dayTotal = dayEntries.reduce((sum, e) => sum + e.minutes, 0);
+
+      const rows = dayEntries.map((entry) => {
+        const proj = state.projects.find((p) => p.id === entry.projectId);
+        const color = proj?.color || '#94A3B8';
+        const name = proj?.name || 'Unknown Project';
+        const wasRounded = entry.originalMinutes != null && entry.originalMinutes !== entry.minutes;
+
+        return `
+          <div class="ts-entry-row">
+            <div class="ts-entry-color" style="background:${color};"></div>
+            <div class="ts-entry-body">
+              <div class="ts-entry-project">${escapeHtml(name)}</div>
+              ${entry.memo ? `<div class="ts-entry-memo">${escapeHtml(entry.memo)}</div>` : ''}
+            </div>
+            <div class="ts-entry-right">
+              <span class="ts-entry-duration">${formatMinutes(entry.minutes)}</span>
+              ${wasRounded ? `<span class="entry-rounded-badge">↑</span>` : ''}
+              <div class="ts-entry-actions">
+                <button class="btn-icon ts-edit-btn" data-id="${entry.id}" title="Edit">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M9.5 2L11 3.5 4.5 10H3v-1.5L9.5 2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="btn-icon ts-delete-btn" data-id="${entry.id}" title="Delete">
+                  <svg width="13" height="13" viewBox="0 0 13 13"><path d="M2 2l9 9M11 2l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="ts-date-group">
+          <div class="ts-date-header">
+            <span class="ts-date-label">${displayDate(date, true)}</span>
+            <span class="ts-date-total">${formatMinutes(dayTotal)}</span>
+          </div>
+          ${rows}
+        </div>`;
+    }).join('');
+}
+
 // ─── Reports ──────────────────────────────────────────────────────────────────
 
 function getReportDateRange() {
@@ -604,14 +686,18 @@ function renderReports() {
   });
 
   const content = document.getElementById('report-content');
+  const actions = document.getElementById('report-actions');
 
   if (filtered.length === 0) {
+    actions.classList.add('hidden');
     content.innerHTML = `
       <div class="empty-state" style="padding:40px 16px;">
         <p>No entries in this period.</p>
       </div>`;
     return;
   }
+
+  actions.classList.remove('hidden');
 
   // Aggregate by project
   const byProject = {};
@@ -638,7 +724,7 @@ function renderReports() {
     <div class="report-summary">
       <div class="summary-card">
         <div class="label">Total Hours</div>
-        <div class="value">${(totalMinutes / 60).toFixed(1)}h</div>
+        <div class="value">${(totalMinutes / 60).toFixed(2)}h</div>
       </div>
       <div class="summary-card">
         <div class="label">Total Earnings</div>
@@ -686,6 +772,113 @@ function renderReports() {
   content.innerHTML = summaryHtml + tableHtml;
 }
 
+// ─── Report export ────────────────────────────────────────────────────────────
+
+function getPeriodLabel() {
+  const { start, end } = getReportDateRange();
+  if (state.reportPeriod === 'week') return `Week of ${displayDate(start)} – ${displayDate(end, true)}`;
+  if (state.reportPeriod === 'month') {
+    const [y, m] = start.split('-').map(Number);
+    return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  }
+  if (state.reportPeriod === 'year') return start.split('-')[0];
+  return `${displayDate(start, true)} – ${displayDate(end, true)}`;
+}
+
+function buildProjectCSV(proj, entries, currency) {
+  const rate = proj?.rate || 0;
+  const projCurrency = proj?.currency || currency;
+  const sorted = [...entries].sort((a, b) => b.date.localeCompare(a.date));
+
+  const hasRate = rate > 0;
+  const header = hasRate
+    ? `Date,Duration,Hours,Rate (${projCurrency}/hr),Amount (${projCurrency}),Type,Memo`
+    : `Date,Duration,Hours,Type,Memo`;
+
+  let totalMinutes = 0;
+  let totalEarnings = 0;
+
+  const rows = sorted.map((e) => {
+    const hours = (e.minutes / 60).toFixed(2);
+    const earnings = rate * e.minutes / 60;
+    totalMinutes += e.minutes;
+    totalEarnings += earnings;
+    const memo = (e.memo || '').replace(/"/g, '""');
+    const type = e.type === 'timer' ? 'Timer' : 'Manual';
+    return hasRate
+      ? `"${displayDate(e.date, true)}",${formatMinutes(e.minutes)},${hours},"${formatCurrency(rate, projCurrency)}","${formatCurrency(earnings, projCurrency)}",${type},"${memo}"`
+      : `"${displayDate(e.date, true)}",${formatMinutes(e.minutes)},${hours},${type},"${memo}"`;
+  });
+
+  const subtotal = hasRate
+    ? `Subtotal,${formatMinutes(totalMinutes)},${(totalMinutes / 60).toFixed(2)},,"${formatCurrency(totalEarnings, projCurrency)}",,`
+    : `Subtotal,${formatMinutes(totalMinutes)},${(totalMinutes / 60).toFixed(2)},,`;
+
+  return { csv: [header, ...rows, subtotal].join('\n'), totalMinutes, totalEarnings };
+}
+
+function exportReport() {
+  const { start, end } = getReportDateRange();
+  const filterProjectId = state.reportProjectId;
+  const currency = state.settings.currency || 'USD';
+
+  const filtered = state.entries.filter((e) => {
+    const inRange = e.date >= start && e.date <= end;
+    const inProject = !filterProjectId || e.projectId === filterProjectId;
+    return inRange && inProject;
+  });
+
+  if (filtered.length === 0) { showToast('No entries to export'); return; }
+
+  const today = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  let csv = `Simple Timesheets Report\n`;
+  csv += `Period,${getPeriodLabel()}\n`;
+  csv += `Generated,"${today}"\n\n`;
+
+  if (filterProjectId) {
+    const proj = state.projects.find((p) => p.id === filterProjectId);
+    csv += `PROJECT: ${proj?.name || 'Unknown'}\n`;
+    const { csv: block } = buildProjectCSV(proj, filtered, currency);
+    csv += block;
+  } else {
+    // Group by project
+    const byProject = {};
+    filtered.forEach((e) => {
+      if (!byProject[e.projectId]) byProject[e.projectId] = [];
+      byProject[e.projectId].push(e);
+    });
+
+    let grandMinutes = 0;
+    let grandEarnings = 0;
+
+    Object.entries(byProject)
+      .sort(([idA], [idB]) => {
+        const a = state.projects.find((p) => p.id === idA)?.name || '';
+        const b = state.projects.find((p) => p.id === idB)?.name || '';
+        return a.localeCompare(b);
+      })
+      .forEach(([projectId, entries]) => {
+        const proj = state.projects.find((p) => p.id === projectId);
+        csv += `PROJECT: ${proj?.name || 'Unknown'}\n`;
+        const { csv: block, totalMinutes, totalEarnings } = buildProjectCSV(proj, entries, currency);
+        csv += block + '\n\n';
+        grandMinutes += totalMinutes;
+        grandEarnings += totalEarnings;
+      });
+
+    csv += `GRAND TOTAL,${formatMinutes(grandMinutes)},${(grandMinutes / 60).toFixed(2)},,"${formatCurrency(grandEarnings, currency)}",,`;
+  }
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `timesheets-report-${start}-to-${end}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Report exported');
+}
+
 // ─── Render all ───────────────────────────────────────────────────────────────
 
 function renderAll() {
@@ -693,6 +886,7 @@ function renderAll() {
   renderTimerControls();
   renderEntries();
   renderProjects();
+  renderTimesheets();
   renderReports();
 }
 
@@ -812,7 +1006,31 @@ function bindEvents() {
   document.getElementById('project-form-cancel').addEventListener('click', closeProjectForm);
   document.getElementById('project-form-save').addEventListener('click', saveProjectForm);
 
+  // Timesheets tab
+  document.getElementById('ts-project-filter').addEventListener('change', renderTimesheets);
+  document.getElementById('ts-add-btn').addEventListener('click', () => openManualForm());
+
+  document.getElementById('timesheets-list').addEventListener('click', async (e) => {
+    const editBtn = e.target.closest('.ts-edit-btn');
+    const deleteBtn = e.target.closest('.ts-delete-btn');
+
+    if (editBtn) {
+      openManualForm(editBtn.dataset.id);
+    }
+
+    if (deleteBtn) {
+      const id = deleteBtn.dataset.id;
+      await deleteEntry(id);
+      state.entries = state.entries.filter((en) => en.id !== id);
+      renderTimesheets();
+      renderEntries();
+      triggerSync();
+      showToast('Entry deleted');
+    }
+  });
+
   // Reports
+  document.getElementById('export-report-btn').addEventListener('click', exportReport);
   document.getElementById('report-period').addEventListener('change', (e) => {
     state.reportPeriod = e.target.value;
     const customDates = document.getElementById('report-custom-dates');

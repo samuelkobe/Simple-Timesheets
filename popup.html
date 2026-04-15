@@ -24,9 +24,9 @@
     </span>
     <div id="drive-status-dot" class="drive-dot hidden" title="Drive sync active"></div>
     <button id="settings-open-btn" class="btn-icon" title="Settings">
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
-        <path d="M8.5 10.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M13.7 6.7l.8-1.4-1.4-1.4-1.4.8a4.5 4.5 0 0 0-1.5-.6L9.8 2.5H7.2l-.4 1.6a4.5 4.5 0 0 0-1.5.6l-1.4-.8-1.4 1.4.8 1.4a4.5 4.5 0 0 0-.6 1.5L2 9.6l1.6.4c.14.54.35 1.05.6 1.5l-.8 1.4 1.4 1.4 1.4-.8c.45.25.96.46 1.5.6l.4 1.6h2.6l.4-1.6a4.5 4.5 0 0 0 1.5-.6l1.4.8 1.4-1.4-.8-1.4c.25-.45.46-.96.6-1.5l1.6-.4-.4-1.9a4.5 4.5 0 0 0-.6-1.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
   </div>
@@ -36,6 +36,7 @@
 <nav id="nav">
   <button class="nav-btn active" data-tab="timer">Timer</button>
   <button class="nav-btn" data-tab="projects">Projects</button>
+  <button class="nav-btn" data-tab="timesheets">Timesheets</button>
   <button class="nav-btn" data-tab="reports">Reports</button>
 </nav>
 
@@ -81,55 +82,6 @@
           </svg>
           <p>No entries yet. Start the timer<br/>or add a manual entry.</p>
         </div>
-      </div>
-    </div>
-
-    <!-- ── Manual Entry Panel (overlay) ─────────────────────────────────────── -->
-    <div id="manual-form-panel" class="hidden">
-      <div class="panel-header">
-        <button id="manual-form-close" class="btn-icon">
-          <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 6 6 10M6 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </button>
-        <h2 id="manual-form-title">Add Time Entry</h2>
-      </div>
-      <div class="panel-body">
-        <div class="field">
-          <label for="mf-project">Project</label>
-          <select id="mf-project">
-            <option value="">— Select project —</option>
-          </select>
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="mf-date">Date</label>
-            <input type="date" id="mf-date" />
-          </div>
-          <div class="field">
-            <label for="mf-duration">Duration (h:mm)</label>
-            <input type="text" id="mf-duration" placeholder="e.g. 1:30 or 45" />
-          </div>
-        </div>
-        <div class="field">
-          <label for="mf-memo">Memo (optional)</label>
-          <textarea id="mf-memo" placeholder="What did you work on?"></textarea>
-        </div>
-        <div id="mf-rounding-row" class="toggle-row hidden">
-          <div>
-            <div class="toggle-label">Round to ¼ hour</div>
-            <div class="toggle-sublabel">Inherited from project setting</div>
-          </div>
-          <label class="toggle">
-            <input type="checkbox" id="mf-round" />
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div id="mf-rounded-preview" class="hidden" style="margin-top:8px; font-size:.82rem; color:var(--primary);">
-          ↳ Will be saved as <strong id="mf-rounded-value"></strong>
-        </div>
-      </div>
-      <div class="panel-footer">
-        <button id="manual-form-cancel" class="btn btn-outline btn-full">Cancel</button>
-        <button id="manual-form-save" class="btn btn-primary btn-full">Save Entry</button>
       </div>
     </div>
 
@@ -233,6 +185,79 @@
 
   </div><!-- /tab-projects -->
 
+  <!-- ══════ TIMESHEETS TAB ══════════════════════════════════════════════════ -->
+  <div id="tab-timesheets" class="tab">
+    <div id="timesheets-section">
+
+      <div class="ts-filter-bar">
+        <select id="ts-project-filter">
+          <option value="">All Projects</option>
+        </select>
+        <button id="ts-add-btn" class="btn btn-outline btn-sm">+ Add Entry</button>
+      </div>
+
+      <div id="timesheets-list" class="scroll">
+        <div class="empty-state" style="padding: 32px 16px;">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="6" width="24" height="20" rx="3" stroke="#CBD5E1" stroke-width="2"/>
+            <path d="M10 12h12M10 16h8M10 20h10" stroke="#CBD5E1" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <p>No entries yet.</p>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /tab-timesheets -->
+
+  <!-- ══════ MANUAL ENTRY PANEL (top-level overlay, works from any tab) ══════ -->
+  <div id="manual-form-panel" class="hidden" style="position:absolute; inset:0; background:var(--white); z-index:10; display:flex; flex-direction:column;">
+    <div class="panel-header">
+      <button id="manual-form-close" class="btn-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 6 6 10M6 6l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <h2 id="manual-form-title">Add Time Entry</h2>
+    </div>
+    <div class="panel-body">
+      <div class="field">
+        <label for="mf-project">Project</label>
+        <select id="mf-project">
+          <option value="">— Select project —</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="mf-date">Date</label>
+          <input type="date" id="mf-date" />
+        </div>
+        <div class="field">
+          <label for="mf-duration">Duration (h:mm)</label>
+          <input type="text" id="mf-duration" placeholder="e.g. 1:30 or 45" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="mf-memo">Memo (optional)</label>
+        <textarea id="mf-memo" placeholder="What did you work on?"></textarea>
+      </div>
+      <div id="mf-rounding-row" class="toggle-row hidden">
+        <div>
+          <div class="toggle-label">Round to ¼ hour</div>
+          <div class="toggle-sublabel">Inherited from project setting</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="mf-round" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div id="mf-rounded-preview" class="hidden" style="margin-top:8px; font-size:.82rem; color:var(--primary);">
+        ↳ Will be saved as <strong id="mf-rounded-value"></strong>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button id="manual-form-cancel" class="btn btn-outline btn-full">Cancel</button>
+      <button id="manual-form-save" class="btn btn-primary btn-full">Save Entry</button>
+    </div>
+  </div>
+
   <!-- ══════ REPORTS TAB ════════════════════════════════════════════════════ -->
   <div id="tab-reports" class="tab">
 
@@ -261,6 +286,13 @@
         <div style="display:flex; align-items:flex-end;">
           <button id="report-apply" class="btn btn-primary btn-sm">Apply</button>
         </div>
+      </div>
+
+      <div id="report-actions" class="report-actions hidden">
+        <button id="export-report-btn" class="btn btn-outline btn-sm">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M4 6.5l2.5 2.5L9 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1.5 10.5v.5a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Export CSV
+        </button>
       </div>
 
       <div id="report-content">
