@@ -1058,6 +1058,7 @@ async function dismissOnboarding() {
     state.settings.hasOnboarded = true;
     await updateSettings({ hasOnboarded: true });
   }
+  switchTab('projects');
 }
 
 // ─── Settings panel ───────────────────────────────────────────────────────────
