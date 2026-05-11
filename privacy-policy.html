@@ -83,7 +83,7 @@
   </a>
 
   <h1>Privacy Policy</h1>
-  <p class="last-updated">Last updated: April 2026</p>
+  <p class="last-updated">Last updated: May 2026</p>
 
   <div class="highlight">
     <p>Simple Timesheets does not collect, transmit, or store any of your data on any server we own or operate. Ever.</p>
@@ -120,6 +120,51 @@
     your Drive's Application Data folder. This token is never transmitted to us.
     You can revoke access at any time from your
     <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener">Google Account permissions page</a>.
+  </p>
+
+  <h2>Google API Services — Data Access Disclosure</h2>
+  <p>
+    Simple Timesheets' use of information received from Google APIs adheres to the
+    <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener">Google API Services User Data Policy</a>,
+    including the Limited Use requirements.
+  </p>
+  <p style="margin-top:12px;">The following table documents exactly how each Google API scope is used:</p>
+
+  <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:.9rem;">
+    <thead>
+      <tr style="background:#f1f5f9;">
+        <th style="text-align:left;padding:10px 12px;border:1px solid #e2e8f0;color:#0f172a;">Scope</th>
+        <th style="text-align:left;padding:10px 12px;border:1px solid #e2e8f0;color:#0f172a;">Data accessed</th>
+        <th style="text-align:left;padding:10px 12px;border:1px solid #e2e8f0;color:#0f172a;">How it is used</th>
+        <th style="text-align:left;padding:10px 12px;border:1px solid #e2e8f0;color:#0f172a;">Stored / shared</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;"><code style="font-size:.82rem;">drive.appdata</code></td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">A single JSON file in the user's private Google Drive Application Data folder (invisible to the user in Drive UI, inaccessible to any other app)</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Read on startup to restore the user's timesheet data; written when data changes to keep it backed up. Used solely to sync data across the user's own devices.</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Stored only in the user's own Google Drive. Never transmitted to any developer-operated server. Never shared with any third party.</td>
+      </tr>
+      <tr style="background:#f8fafc;">
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;"><code style="font-size:.82rem;">userinfo.profile</code></td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Google account display name and profile photo URL</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Displayed inside the extension's Settings panel so the user can confirm which Google account is connected. Not processed or analysed in any way.</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Held in memory only for the current session. Never written to any server or persistent storage outside the user's own device.</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;"><code style="font-size:.82rem;">userinfo.email</code></td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Google account email address</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Displayed alongside the profile name in the Settings panel so the user can confirm which account is linked to Drive sync. Not processed or analysed in any way.</td>
+        <td style="padding:10px 12px;border:1px solid #e2e8f0;vertical-align:top;">Held in memory only for the current session. Never written to any server or persistent storage outside the user's own device.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Google user data is never used for advertising, profiling, or any purpose beyond the specific feature described above.
+    The extension does not transfer Google user data to third parties.
+    The extension does not use Google user data to train AI or machine learning models.
   </p>
 
   <h2>Data export and deletion</h2>
